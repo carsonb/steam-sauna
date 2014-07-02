@@ -32,6 +32,12 @@ group :doc do
   gem 'sdoc', require: false
 end
 
+# use Steam OpenID Omniauth gem for authenticating Steam users
+gem 'omniauth-steam'
+
+#secrets are secret
+gem 'figaro'
+
 # Use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.1.2'
 

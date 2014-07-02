@@ -1,4 +1,7 @@
 SteamSauna::Application.routes.draw do
+  get "welcome/index"
+  root "welcome#index"
+  post 'auth/steam/callback' => 'welcome#auth_callback'
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
