@@ -7,3 +7,9 @@
 <p><%= session[:current_user][:nickname] %></p>
 <p><%= session[:current_user][:uid] %></p>
 <% end %>
+
+<ul>
+<% @friends.each do |friend| %>
+  <li><%= friend.steamid %></li>
+<% end %>
+</ul>

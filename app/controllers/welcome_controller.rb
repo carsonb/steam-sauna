@@ -3,6 +3,8 @@ class WelcomeController < ApplicationController
   skip_before_filter :verify_authenticity_token, :only => :auth_callback
 
   def index
+    auth = request.env['omniauth.auth']
+    @friends = Steam::User.friends(auth.uid)
   end
 
   def auth_callback

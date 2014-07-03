@@ -7,11 +7,11 @@ Getting Started
 ---------------
 
 Get an API key at [http://steamcommunity.com/dev/registerkey](http://steamcommunity.com/dev/registerkey). Then add it:
-``
+```
 # config/application.yml
-STEAM_WEB_API_KEY: 'your steam key here'
+STEAM_API_KEY: 'your steam key here'
 SECRET_TOKEN: 'probably should do something here too'
-``
+```
 
 Ackowledgements
 ---------------

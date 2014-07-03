@@ -38,6 +38,9 @@ gem 'omniauth-steam'
 #secrets are secret
 gem 'figaro'
 
+# steam api wrapper FTW
+gem 'steam-api'
+
 # Use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.1.2'
 
