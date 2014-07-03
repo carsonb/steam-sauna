@@ -4,7 +4,9 @@ class WelcomeController < ApplicationController
 
   def index
     auth = request.env['omniauth.auth']
-    @friends = Steam::User.friends(auth.uid)
+    if session[:current_user][:uid]
+      @friends = Steam::User.friends(session[:current_user][:uid].to_i)
+    end
   end
 
   def auth_callback

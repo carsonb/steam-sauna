@@ -10,6 +10,6 @@
 
 <ul>
 <% @friends.each do |friend| %>
-  <li><%= friend.steamid %></li>
+  <li><%= friend["steamid"] %></li>
 <% end %>
 </ul>
