@@ -8,11 +8,12 @@
 <p><%= session[:current_user][:uid] %></p>
 <% end %>
 
+<h4>Yer Frenz</h4>
 <ul>
-<% if @friends %>
-  <% @friends.each do |friend| %>
-  <li><%= friend["steamid"] %></li>
-  <% end %>
+<% @friends.each do |friend| %>
+  <li>
+    <%= image_tag(friend['avatar']) %> <%= friend['personaname'] %>
+  </li>
 <% end %>
 </ul>
 
