@@ -9,7 +9,9 @@
 <% end %>
 
 <ul>
-<% @friends.each do |friend| %>
+<% if @friends %>
+  <% @friends.each do |friend| %>
   <li><%= friend["steamid"] %></li>
+  <% end %>
 <% end %>
 </ul>
