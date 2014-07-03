@@ -9,13 +9,20 @@
 <% end %>
 
 <h4>Yer Frenz</h4>
-<ul>
-<% @friends.each do |friend| %>
-  <li>
-    <%= image_tag(friend['avatar']) %> <%= friend['personaname'] %>
-  </li>
+<% if @friends.count > 0 %>
+  <%= form_tag do %>
+    <ul>
+    <% @friends.each do |friend| %>
+      <li>
+      <%= check_box_tag 'friends[]', friend['steamid'], nil, :id => friend['steamid'] -%>
+      <%= label_tag friend['steamid'], "#{image_tag(friend['avatar'])} #{friend['personaname']}".html_safe -%>
+      </li>
+    <% end %>
+    </ul>
+  <% end %>
+<% else %>
+  <div>Sorry, no friends</div>
 <% end %>
-</ul>
 
 <h4>Yer Gams</h4>
 <ul>
