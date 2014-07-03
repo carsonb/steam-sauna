@@ -3,10 +3,10 @@ class WelcomeController < ApplicationController
   skip_before_filter :verify_authenticity_token, :only => :auth_callback
 
   def index
-    auth = request.env['omniauth.auth']
     if session[:current_user]
-      @friends = Steam::User.friends(session[:current_user][:uid].to_i)
+      @friends = retrieve_friends
     end
+    @friends ||= []
   end
 
   def auth_callback
@@ -15,5 +15,10 @@ class WelcomeController < ApplicationController
                                           :image => auth.info['image'],
                                           :uid => auth.uid }
     redirect_to root_url
+  end
+
+  def retrieve_friends
+    friends = Steam::User.friends(session[:current_user][:uid].to_i)
+    Steam::User.summaries(friends.map{|f| f['steamid']})
   end
 end
