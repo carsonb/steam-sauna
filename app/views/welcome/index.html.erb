@@ -17,10 +17,13 @@
 <% end %>
 </ul>
 
+<h4>Yer Gams</h4>
 <ul>
 <% if @games %>
   <% @games.each do |game| %>
-  <li><%= game["name"] %></li>
+  <li>
+    <%= game_logo(game) %>
+  </li>
   <% end %>
 <% end %>
 </ul>
