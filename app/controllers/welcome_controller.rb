@@ -5,7 +5,9 @@ class WelcomeController < ApplicationController
   def index
     auth = request.env['omniauth.auth']
     if session[:current_user]
-      @friends = Steam::User.friends(session[:current_user][:uid].to_i)
+      uid = session[:current_user][:uid].to_i
+      @friends = Steam::User.friends(uid)
+      @games = Steam::Player.owned_games(uid, params: {include_appinfo: 1})['games']
     end
   end
 

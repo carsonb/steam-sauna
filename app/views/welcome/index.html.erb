@@ -15,3 +15,11 @@
   <% end %>
 <% end %>
 </ul>
+
+<ul>
+<% if @games %>
+  <% @games.each do |game| %>
+  <li><%= game["name"] %></li>
+  <% end %>
+<% end %>
+</ul>
