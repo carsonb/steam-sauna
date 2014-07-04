@@ -10,7 +10,7 @@
 
 <h4>Yer Frenz</h4>
 <% if @friends.count > 0 %>
-  <%= form_tag do %>
+  <%= form_tag(:action => 'search') do %>
     <ul>
     <% @friends.each do |friend| %>
       <li>

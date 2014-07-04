@@ -8,13 +8,25 @@ class WelcomeController < ApplicationController
     @games = retrieve_games(user_id)
   end
 
+  def search
+
+  end
+
   def retrieve_friends
-    friends = Steam::User.friends(user_id)
+    begin
+      friends = Steam::User.friends(user_id)
+    rescue Steam::JSONError
+      friends = []
+    end
     Steam::User.summaries(friends.map{|f| f['steamid']})
   end
 
   def retrieve_games(uid)
-    games = Steam::Player.owned_games(uid, params: {include_appinfo: 1})
+    begin
+      games = Steam::Player.owned_games(uid, params: {include_appinfo: 1})
+    rescue Steam::JSONError
+      games = []
+    end
     games['games']
   end
 end
