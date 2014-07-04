@@ -5,7 +5,7 @@ class WelcomeController < ApplicationController
 
   def index
     @friends = retrieve_friends
-    @games = retrieve_games
+    @games = retrieve_games(user_id)
   end
 
   def retrieve_friends
@@ -13,8 +13,8 @@ class WelcomeController < ApplicationController
     Steam::User.summaries(friends.map{|f| f['steamid']})
   end
 
-  def retrieve_games
-    games = Steam::Player.owned_games(user_id, params: {include_appinfo: 1})
+  def retrieve_games(uid)
+    games = Steam::Player.owned_games(uid, params: {include_appinfo: 1})
     games['games']
   end
 end
