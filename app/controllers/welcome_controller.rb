@@ -21,9 +21,9 @@ class WelcomeController < ApplicationController
     begin
       friends = Steam::User.friends(user_id)
     rescue Steam::JSONError
-      friends = []
+      return []
     end
-    Steam::User.summaries(friends.map{|f| f['steamid']})
+    Steam::User.summaries(friends.map{|f| f['steamid']}).sort { |a,b| a['personaname'] <=> b['personaname'] }
   end
 
   def retrieve_games(uid)
