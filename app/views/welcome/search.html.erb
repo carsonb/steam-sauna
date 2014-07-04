@@ -1,0 +1,17 @@
+<h1>Welcome#search</h1>
+<h2>Finding shared games you can play with:</h2>
+<ul>
+<% params[:friends].each do |friend_id| %>
+<li>
+<%= friend_id %>
+</li>
+<% end %>
+</ul>
+<h2>And we found:</h2>
+<ul>
+  <% @games_to_play.each do |game| %>
+  <li>
+    <%= game_logo(game) %>
+  </li>
+  <% end %>
+</ul>

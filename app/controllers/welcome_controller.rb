@@ -9,7 +9,12 @@ class WelcomeController < ApplicationController
   end
 
   def search
-
+    finder = GameFinder.new
+    finder.add_players_games(retrieve_games(user_id))
+    params[:friends].each do |friend_id|
+      finder.add_players_games(retrieve_games(friend_id))
+    end
+    @games_to_play = finder.playable_games
   end
 
   def retrieve_friends
@@ -27,6 +32,6 @@ class WelcomeController < ApplicationController
     rescue Steam::JSONError
       games = []
     end
-    games['games']
+    games['games'].map { |game| Game.new(game) }
   end
 end

@@ -15,10 +15,11 @@
     <% @friends.each do |friend| %>
       <li>
       <%= check_box_tag 'friends[]', friend['steamid'], nil, :id => friend['steamid'] -%>
-      <%= label_tag friend['steamid'], "#{image_tag(friend['avatar'])} #{friend['personaname']}".html_safe -%>
+      <%= label_tag friend['steamid'], "#{user_icon(friend)} #{friend['personaname']}".html_safe -%>
       </li>
     <% end %>
     </ul>
+    <%= submit_tag("Match") %>
   <% end %>
 <% else %>
   <div>Sorry, no friends</div>
