@@ -1,3 +1,71 @@
 // Place all the styles related to the welcome controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+html, body {
+  margin: 0;
+}
+
+ul {
+  display: inline-block;
+  min-width: 203px;
+
+  padding: 0;
+  text-align: center;
+
+  li {
+    display: inline-block;
+    margin: 10px;
+    padding: 5px;
+
+    list-style-type: none;
+
+    /* :hover doesn't apply to <li> in IE7 and lower. */
+    &:hover {
+      background-color: #66ccee;
+
+      a {
+        border-color: #66ccee;
+      }
+    }
+
+    &.selected {
+      background-color: #66ee66;
+
+      a {
+        border-color: #66ee66;
+      }
+
+      &:hover {
+        background-color: #cc6666;
+
+        a {
+          border-color: #cc6666;
+        }
+      }
+    }
+
+    a {
+      display: block;
+
+      height: 184px;
+      width: 184px;
+
+      border: 2px solid #000;
+
+      span {
+        display: block;
+
+        position: absolute;
+        margin-top: -29px;
+
+        height: 25px;
+        width: 184px;
+
+        /* rgba doesn't work in IE8 and lower. */
+        background-color: rgba(255, 255, 255, 0.7)
+      }
+    }
+  }
+}
+

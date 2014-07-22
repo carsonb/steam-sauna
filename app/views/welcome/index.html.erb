@@ -1,37 +1,30 @@
-<h1>Welcome#index</h1>
-<%= link_to image_tag("http://cdn.steamcommunity.com/public/images/signinthroughsteam/sits_large_noborder.png"), '/auth/steam' %>
 
-<% if session.key? :current_user %>
-<h3>Current user:</h3>
-<%= image_tag session[:current_user][:image] %>
-<p><%= session[:current_user][:nickname] %></p>
-<p><%= session[:current_user][:uid] %></p>
-<% end %>
+<h1>Steam Sauna</h1>
 
-<h4>Yer Frenz</h4>
+<p>Sup <%= session[:current_user][:nickname] %>!</p>
+
+<p>Let's get yer gam on. Pick some Frenz below an' hit Mash.</p>
+
 <% if @friends.count > 0 %>
   <%= form_tag(:action => 'search') do %>
+    <h2>Frenz</h2>
+
     <ul>
     <% @friends.each do |friend| %>
-      <li>
-      <%= check_box_tag 'friends[]', friend['steamid'], nil, :id => friend['steamid'] -%>
-      <%= label_tag friend['steamid'], "#{user_icon(friend)} #{friend['personaname']}".html_safe -%>
+      <li id="<%= friend['steamid'] %>">
+        <a href="#">
+          <img alt="" src="<%= friend['avatarfull'] %>" />
+          <span><%= friend['personaname'] %></span>
+        </a>
       </li>
     <% end %>
     </ul>
-    <%= submit_tag("Match") %>
+
+    <%= submit_tag("Mash") %>
   <% end %>
 <% else %>
-  <div>Sorry, no friends</div>
+  <h2>No frenz!?</h2>
+
+  <p>Seriously, we didn't get any Friends back from the Steam API. Make sure your account is public, and that at least one of your friends also has a public account. We only ask Steam for public information about your account because we respect and care about our users.</p>
 <% end %>
 
-<h4>Yer Gams</h4>
-<ul>
-<% if @games %>
-  <% @games.each do |game| %>
-  <li>
-    <%= game_logo(game) %>
-  </li>
-  <% end %>
-<% end %>
-</ul>
