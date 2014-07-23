@@ -4,5 +4,5 @@ SteamSauna::Application.routes.draw do
 
   get 'login' => 'auth#index'
   post 'auth/steam/callback' => 'auth#callback'
-  post '/search'             => 'welcome#search'
+  get '/search' => 'welcome#search'
 end

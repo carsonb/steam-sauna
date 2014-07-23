@@ -19,7 +19,14 @@ class SteamSauna.Welcome
 
   listenForSubmit: () ->
     $('#submit').on 'click', () =>
-      console.log @selectedFriends
+      $.ajax
+        url: '/search'
+        type: 'GET'
+        data:
+          friends: @selectedFriends
+        success: () ->
+          console.log 'arguments'
+          console.log arguments
 
   toggleFriend: ($li) ->
     id = $li.attr('id')
