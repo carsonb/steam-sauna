@@ -3,9 +3,9 @@
 
 <% if session.key? :current_user %>
 <h3>Current user:</h3>
-<%= image_tag session[:current_user][:image] %>
-<p><%= session[:current_user][:nickname] %></p>
-<p><%= session[:current_user][:uid] %></p>
+<%= image_tag current_user.image %>
+<p><%= current_user.nickname %></p>
+<p><%= current_user.uid %></p>
 <% end %>
 
 <h4>Yer Frenz</h4>
@@ -14,8 +14,8 @@
     <ul>
     <% @friends.each do |friend| %>
       <li>
-      <%= check_box_tag 'friends[]', friend['steamid'], nil, :id => friend['steamid'] -%>
-      <%= label_tag friend['steamid'], "#{user_icon(friend)} #{friend['personaname']}".html_safe -%>
+        <%= check_box_tag 'friends[]', friend.uid, nil, :id => friend.uid -%>
+        <%= label_tag friend.uid, "#{image_tag(friend.image)} #{friend.nickname}".html_safe -%>
       </li>
     <% end %>
     </ul>
