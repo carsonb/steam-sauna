@@ -18,7 +18,7 @@ class SteamSauna.Welcome
       @toggleFriend $(event.target).parents('li')
 
   listenForSubmit: () ->
-    $('#submit').on 'click', () ->
+    $('#submit').on 'click', () =>
       console.log @selectedFriends
 
   toggleFriend: ($li) ->

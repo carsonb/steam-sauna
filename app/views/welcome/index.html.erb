@@ -1,30 +1,36 @@
 
-<h1>Steam Sauna</h1>
+<div id="user">
+  <div>
+    <h1>Steam Sauna</h1>
 
-<p>Sup <%= session[:current_user][:nickname] %>!</p>
+    <%= image_tag session[:current_user][:image] %>
 
-<p>Let's get yer gam on. Pick some Frenz below an' hit Mash.</p>
+    <p>Sup <em><%= session[:current_user][:nickname] %>!</em></p>
 
-<% if @friends.count > 0 %>
-  <%= form_tag(:action => 'search') do %>
-    <h2>Frenz</h2>
+    <p>Let's get yer <em>gam</em> on. Click some <em>Frenz</em> an' hit <em>Mash.</em></p>
 
+    <div>
+      <a id="submit" href="#">Mash</a>
+    </div>
+  </div>
+</div>
+
+<div id="friends">
+  <% if @friends.count > 0 %>
     <ul>
     <% @friends.each do |friend| %>
       <li id="<%= friend['steamid'] %>">
-        <a href="#">
+        <a href="#" title="<%= friend['personaname'] %>">
           <img alt="" src="<%= friend['avatarfull'] %>" />
           <span><%= friend['personaname'] %></span>
         </a>
       </li>
     <% end %>
     </ul>
+  <% else %>
+    <h2>No frenz!?</h2>
 
-    <%= submit_tag("Mash") %>
+    <p>Seriously, we didn't get any Friends back from the Steam API. Make sure your account is public, and that at least one of your friends also has a public account. We only ask Steam for public information about your account because we respect and care about our users.</p>
   <% end %>
-<% else %>
-  <h2>No frenz!?</h2>
-
-  <p>Seriously, we didn't get any Friends back from the Steam API. Make sure your account is public, and that at least one of your friends also has a public account. We only ask Steam for public information about your account because we respect and care about our users.</p>
-<% end %>
+</div>
 
