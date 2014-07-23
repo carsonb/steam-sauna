@@ -7,11 +7,11 @@ class AuthController < ApplicationController
 
   def callback
     auth = request.env['omniauth.auth']
-
-    user = User.where(uid: auth.uid.to_i).first_or_initialize
-    user.update_attributes(auth.info.slice('nickname', 'image'))
-    session[:current_user] = user.id
-
+    session[:current_user] = {
+      :nickname => auth.info['nickname'],
+      :image => auth.info['image'],
+      :uid => auth.uid
+    }
     redirect_to root_url
   end
 
