@@ -43,12 +43,10 @@ gem 'steam-api'
 group :development do
   gem 'better_errors'
   gem 'binding_of_caller'
-  gem 'sqlite3'
 end
 
-group :production do
-  gem 'pg'
-end
+gem 'pg'
+
 
 # Use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.1.2'
