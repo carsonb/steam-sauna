@@ -21,12 +21,12 @@ class SteamSauna.Welcome
     $('#submit').on 'click', () =>
       $.ajax
         url: '/search'
-        type: 'GET'
+        type: 'POST'
         data:
           friends: @selectedFriends
-        success: () ->
-          console.log 'arguments'
-          console.log arguments
+        success: (html) ->
+          # hax because I don't know how to do this in rails
+          $('html').html(html)
 
   toggleFriend: ($li) ->
     id = $li.attr('id')
