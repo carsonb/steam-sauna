@@ -1,5 +1,4 @@
-
-<div id="user">
+<div id="usr" class="header">
   <div>
     <h1>Steam Sauna</h1>
 
@@ -9,13 +8,13 @@
 
     <p>Let's get yer <em>gam</em> on. Click some <em>Frenz</em> an' hit <em>Mash.</em></p>
 
-    <div>
+    <div class="btn-wrapper">
       <a id="submit" href="#">Mash</a>
     </div>
   </div>
 </div>
 
-<div id="friends">
+<div id="frenz" class="steam-data">
   <% if @friends.count > 0 %>
     <ul>
     <% @friends.each do |friend| %>

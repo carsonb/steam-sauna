@@ -1,17 +1,29 @@
-<h1>Welcome#search</h1>
-<h2>Finding shared games you can play with:</h2>
-<ul>
-<% params[:friends].each do |friend_id| %>
-<li>
-<%= friend_id %>
-</li>
-<% end %>
-</ul>
-<h2>And we found:</h2>
-<ul>
-  <% @games_to_play.each do |game| %>
-  <li>
-    <%= game_logo(game) %>
-  </li>
+<div id="peeps" class="header">
+  <div>
+    <h1>Steam Sauna</h1>
+
+    <%= image_tag session[:current_user][:image] %>
+
+    <% @friends_to_play_with.each do |friend| %>
+      <script>console.log(<%= friend %>)</script>
+      <img alt="" src="<%= friend['avatarmedium'] %>" />
+    <% end %>
+
+    <p><em><%= session[:current_user][:nickname] %>,</em> here are the <em>gams</em> you and yer <em>frenz</em> all haz:</p>
+  </div>
+</div>
+
+<div id="gamz" class="steam-data">
+  <% if @games_to_play.count > 0 %>
+    <ul>
+    <% @games_to_play.each do |game| %>
+      <li><%= game_logo(game) %></li>
+    <% end %>
+    </ul>
+  <% else %>
+    <h2>No gamz!</h2>
+
+    <p>You and your friends don't have any Steam games in common.</p>
   <% end %>
-</ul>
+</div>
+
