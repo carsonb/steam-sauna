@@ -4,8 +4,8 @@ class WelcomeController < ApplicationController
   before_action :ensure_logged_in
 
   def index
-    @friends = all_friends
-    @games = steam_service.retrieve_games(user_id)
+    @friends = retrieve_friends
+    @games = retrieve_games
   end
 
   def search
@@ -13,6 +13,15 @@ class WelcomeController < ApplicationController
 
     @games_to_play = steam_service.find_matching_games(selectedFriendIds)
     @friends_to_play_with = all_friends.select {|friend| selectedFriendIds.include? friend['steamid']}
+  end
+
+  def retrieve_friends
+    current_user.update_friends unless current_user.friends?
+    User.fetch_and_or_store(current_user.friends)
+  end
+
+  def retrieve_games
+    steam_service.retrieve_games(current_user.uid)
   end
 
   private
