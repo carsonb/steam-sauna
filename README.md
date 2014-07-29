@@ -13,6 +13,15 @@ STEAM_API_KEY: 'your steam key here'
 SECRET_TOKEN: 'probably should do something here too'
 ```
 
+We use Postgres, to get this working on your development machine, install Postgres ([Postgres.app on a Mac](http://postgresapp.com/)) and configure the db:
+
+```
+createdb steam_sauna_dev
+createuser steamsauna
+bundle install
+rake db:migrate
+```
+
 Ackowledgements
 ---------------
 

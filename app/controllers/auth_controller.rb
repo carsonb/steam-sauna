@@ -10,7 +10,7 @@ class AuthController < ApplicationController
 
     user = User.where(uid: auth.uid.to_i).first_or_initialize
     user.update_attributes(auth.info.slice('nickname', 'image'))
-    session[:current_user] = user.id
+    log_in(user)
 
     redirect_to root_url
   end
