@@ -40,6 +40,8 @@ gem 'figaro'
 # steam api wrapper FTW
 gem 'steam-api'
 
+gem 'thin'
+
 group :development do
   gem 'better_errors'
   gem 'binding_of_caller'
