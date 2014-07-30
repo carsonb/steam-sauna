@@ -1,6 +1,8 @@
 ENV["RAILS_ENV"] ||= "test"
 require File.expand_path('../../config/environment', __FILE__)
 require 'rails/test_help'
+require "minitest/autorun"
+require 'webmock/minitest'
 
 class ActiveSupport::TestCase
   ActiveRecord::Migration.check_pending!
@@ -11,5 +13,7 @@ class ActiveSupport::TestCase
   # -- they do not yet inherit this setting
   fixtures :all
 
-  # Add more helper methods to be used by all tests here...
+  def fetch_page(name: 'counter_strike.html')
+    File.read(Rails.root + "test/data/game_pages/#{name}")
+  end
 end
