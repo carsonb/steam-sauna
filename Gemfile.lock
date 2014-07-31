@@ -26,6 +26,7 @@ GEM
       thread_safe (~> 0.1)
       tzinfo (~> 0.3.37)
     addressable (2.3.6)
+    agent (0.9.1)
     arel (4.0.2)
     better_errors (1.1.0)
       coderay (>= 1.0.0)
@@ -156,6 +157,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  agent
   better_errors
   binding_of_caller
   coffee-rails (~> 4.0.0)
