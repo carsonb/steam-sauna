@@ -1,8 +1,11 @@
 require 'test_helper'
 
 class GameImportPipelineTest < ActiveSupport::TestCase
-  attr_reader :pipeline
+  attr_reader :pipeline, :cs, :necro, :error
   setup do
+    @error = channel!(StandardError)
+    @cs = fetch_page(name: 'counter_strike.html')
+    @necro = fetch_page(name: 'necrodancer.html')
     @pipeline = GameImportPipeline.new
     pipeline.timeout = 0.1
   end
@@ -14,7 +17,30 @@ class GameImportPipelineTest < ActiveSupport::TestCase
   end
 
   test "fetch_pages fetches all the pages from steam" do
-    cs = fetch_page(name: 'counter_strike.html')
-    necro = fetch_page(name: 'necrodancer.html')
+    before = Proc.new do
+      WebMock::API.stub_request(:get, 'http://store.steampowered.com/app/1234').to_return(body: cs, status: 200)
+      WebMock::API.stub_request(:get, 'http://store.steampowered.com/app/4321').to_return(body: necro, status: 200)
+    end
+
+    result_chan = pipeline.fetch_pages([1234, 4321], 2, error, before: before)
+    results = []
+    async_process do |s|
+      s.case(result_chan, :receive) { |content| results << content }
+    end
+
+    assert_equal 2, results.length
+    assert_equal cs, results[0]
+    assert_equal necro, results[1]
+  end
+
+  def async_process(&blk)
+    processing = true
+    while processing do
+      select! do |s|
+        blk.yield(s)
+        s.case(error, :receive) { |err| raise err }
+        s.timeout(0.1) { processing = false }
+      end
+    end
   end
 end

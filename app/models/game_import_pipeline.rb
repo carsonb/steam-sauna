@@ -2,7 +2,7 @@ class GameImportPipeline
 
   TIMEOUT = 5.0
 
-  attr_accessor :timeout
+  attr_accessor :timeout, :stale_game_data
 
   def import(app_ids=[])
     error = channel!(StandardError)
@@ -31,20 +31,24 @@ class GameImportPipeline
   def retrive_missing_or_outdated_games(app_ids)
     existing_games = SteamGame.where(app_id: app_ids).pluck(:app_id, :updated_at)
     games_to_update = existing_games.map do |app_id, updated_at|
-      if updated_at < STALE_GAME_DATA || app_ids.include?(app_id) == false
+      app_ids.delete(app_id)
+      if updated_at < stale_game_data
         app_id
       end
     end
-    games_to_update.compact
+    games_to_update.compact + app_ids
   end
 
-  def fetch_pages(app_ids, count, error)
-    page_chan = channel!(String, count)
+  def fetch_pages(app_ids, count, error, before: ->{})
+    clazz = SteamCatalogPage
+    page_chan = channel!(String)
     app_ids.each do |id|
       go! do
         begin
-          page = SteamCatalogPage.new(app_id)
-          page_chan << page.body
+          before.call
+          page = SteamCatalogPage.new(id)
+          content = page.body
+          page_chan << content
         rescue => e
           error << e
         end
@@ -103,5 +107,9 @@ class GameImportPipeline
 
   def timeout
     @timeout || TIMEOUT
+  end
+
+  def stale_game_data
+    @stale_game_data ||= 1.week.ago.utc
   end
 end
