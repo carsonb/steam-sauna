@@ -2,9 +2,9 @@
   <div>
     <h1>Steam Sauna</h1>
 
-    <%= image_tag session[:current_user][:image] %>
+    <%= image_tag current_user[:image] %>
 
-    <p>Sup <em><%= session[:current_user][:nickname] %>!</em></p>
+    <p>Sup <em><%= current_user[:nickname] %>!</em></p>
 
     <p>Let's get yer <em>gam</em> on. Click some <em>Frenz</em> an' hit <em>Mash.</em></p>
 
@@ -18,10 +18,10 @@
   <% if @friends.count > 0 %>
     <ul>
     <% @friends.each do |friend| %>
-      <li id="<%= friend['steamid'] %>">
-        <a href="#" title="<%= friend['personaname'] %>">
-          <img alt="" src="<%= friend['avatarfull'] %>" />
-          <span><%= friend['personaname'] %></span>
+      <li id="<%= friend[:uid] %>">
+        <a href="#" title="<%= friend[:nickname] %>">
+          <img alt="" src="<%= friend[:image] %>" />
+          <span><%= friend[:nickname] %></span>
         </a>
       </li>
     <% end %>

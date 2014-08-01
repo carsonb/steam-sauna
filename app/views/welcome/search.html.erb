@@ -2,14 +2,14 @@
   <div>
     <h1>Steam Sauna</h1>
 
-    <%= image_tag session[:current_user][:image] %>
+    <% current_user.inspect %>
+    <%= image_tag current_user[:image] %>
 
     <% @friends_to_play_with.each do |friend| %>
-      <script>console.log(<%= friend %>)</script>
-      <img alt="" src="<%= friend['avatarmedium'] %>" />
+      <img alt="<%= friend[:nickname] %>" src="<%= friend[:image] %>" />
     <% end %>
 
-    <p><em><%= session[:current_user][:nickname] %>,</em> here are the <em>gams</em> you and yer <em>frenz</em> all haz:</p>
+    <p><em><%= current_user[:nickname] %>,</em> here are the <em>gams</em> you and yer <em>frenz</em> all haz:</p>
   </div>
 </div>
 
@@ -17,7 +17,9 @@
   <% if @games_to_play.count > 0 %>
     <ul>
     <% @games_to_play.each do |game| %>
-      <li><%= game_logo(game) %></li>
+      <% if not game.img_logo_url.empty? %>
+        <li><%= game_logo(game) %></li>
+      <% end %>
     <% end %>
     </ul>
   <% else %>

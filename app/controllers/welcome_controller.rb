@@ -10,9 +10,11 @@ class WelcomeController < ApplicationController
 
   def search
     selectedFriendIds = params[:friends]
-
     @games_to_play = steam_service.find_matching_games(selectedFriendIds)
-    @friends_to_play_with = all_friends.select {|friend| selectedFriendIds.include? friend['steamid']}
+
+    @friends_to_play_with = retrieve_friends.select do |friend|
+      selectedFriendIds.include? "#{friend[:uid]}"
+    end
   end
 
   def retrieve_friends
@@ -28,9 +30,5 @@ class WelcomeController < ApplicationController
 
   def steam_service
     @steam_service ||= SteamService.new(user_id) if user_id
-  end
-
-  def all_friends
-    steam_service.retrieve_friends
   end
 end
