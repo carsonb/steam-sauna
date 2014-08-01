@@ -58,13 +58,14 @@ class GameImportPipeline
   end
 
   def extract_details(page_chan, count, error)
-    details_chan = channel!(CatalogPageDetails, count)
+    details_chan = channel!(CatalogPageDetails::Details, count)
     go! do
       loop do
         select! do |s|
           s.case(page_chan, :receive) do |content|
             begin
-              details_chan << CatalogPageDetails.new(content)
+              details = CatalogPageDetails.new(content)
+              details_chan << CatalogPageDetails::Details.new(details.as_hash)
             rescue => e
               error << e
             end
@@ -73,6 +74,7 @@ class GameImportPipeline
         end
       end
     end
+    details_chan
   end
 
   def import_games(details_chan, count, error, done)

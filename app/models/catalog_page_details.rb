@@ -52,6 +52,28 @@ class CatalogPageDetails
     end
   end
 
+  def as_hash
+    {
+      multi: multi_player?,
+      single: single_player?,
+      game_id: game_id,
+      capsule_image: capsule_image,
+      header_image: header_image,
+      title: title
+    }
+  end
+
+  class Details
+    KEYS = [:multi, :single, :game_id, :capsule_image, :header_image, :title]
+    attr_accessor :multi, :single, :game_id, :capsule_image, :header_image, :title
+
+    def initialize(details)
+      KEYS.each do |k|
+        public_send("#{k}=".to_sym, details[k])
+      end
+    end
+  end
+
   private
   def strip_params(url)
     uri = URI.parse(url)

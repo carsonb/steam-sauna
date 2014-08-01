@@ -29,8 +29,25 @@ class GameImportPipelineTest < ActiveSupport::TestCase
     end
 
     assert_equal 2, results.length
-    assert_equal cs, results[0]
-    assert_equal necro, results[1]
+    assert results.delete(cs)
+    assert results.delete(necro)
+  end
+
+  test "extract_details takes all the page data and makes it usable" do
+    pages = channel!(String, 2)
+    pages << cs
+    pages << necro
+
+    details_chan = pipeline.extract_details(pages, 2, error)
+
+    results = []
+    async_process do |s|
+      s.case(details_chan, :receive) { |d| results << d }
+    end
+
+    assert_equal 2, results.count
+    assert results.select{ |r| r.title == 'Counter Strike: Global Offensive' }
+    assert results.select{ |r| r.title == 'Crypt of the NecroDancer' }
   end
 
   def async_process(&blk)

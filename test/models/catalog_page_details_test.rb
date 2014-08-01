@@ -31,4 +31,9 @@ class CatalogPageDetailsTest < ActiveSupport::TestCase
     page_details = CatalogPageDetails.new(fetch_page(name: 'necrodancer.html'))
     assert page_details.single_player?, "Crypt of the Necrodancer is a single player game"
   end
+
+  test "initalizing a details value object" do
+    details = CatalogPageDetails::Details.new(page_details.as_hash)
+    assert_equal 'Counter-Strike: Global Offensive', details.title
+  end
 end
