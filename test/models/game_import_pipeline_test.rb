@@ -46,8 +46,34 @@ class GameImportPipelineTest < ActiveSupport::TestCase
     end
 
     assert_equal 2, results.count
-    assert results.select{ |r| r.title == 'Counter Strike: Global Offensive' }
-    assert results.select{ |r| r.title == 'Crypt of the NecroDancer' }
+    assert results.select{ |r| r[:title] == 'Counter Strike: Global Offensive' }
+    assert results.select{ |r| r[:title] == 'Crypt of the NecroDancer' }
+  end
+
+  test "import game takes a game entry and adds it to the database" do
+    assert_difference "SteamGame.count" do
+      game = pipeline.import_game({multi_player: true, title: 'Awesomenauts', app_id: 9999}, error)
+      assert_equal 9999, game.app_id
+      assert game.multi_player?
+      assert_equal 'Awesomenauts', game.title
+    end
+  end
+
+  test "import_game just updates a record if it already exists" do
+    old_title = steam_games(:cs_source).title
+    assert_no_difference "SteamGame.count" do
+      game = pipeline.import_game({multi_player: true, title: 'Awesomenauts', app_id: 1234}, error)
+      assert_equal 1234, game.app_id
+      assert_not_equal old_title, game.title
+    end
+  end
+
+  test "import_game sends all errors off to the error channel for proper handling" do
+    go! { pipeline.import_game({garbage: 'data', to: 'raise errors'}, error)}
+
+    assert_raises_child_of NoMethodError do
+      async_process {}
+    end
   end
 
   def async_process(&blk)

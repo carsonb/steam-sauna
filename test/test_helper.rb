@@ -16,4 +16,13 @@ class ActiveSupport::TestCase
   def fetch_page(name: 'counter_strike.html')
     File.read(Rails.root + "test/data/game_pages/#{name}")
   end
+
+  def assert_raises_child_of(error, &blk)
+    begin
+      blk.yield
+    rescue => e
+      parent = e.class.superclass
+      assert_equal error, parent, "Expected an error of type #{error} but received of type #{parent} instead"
+    end
+  end
 end
