@@ -15,6 +15,10 @@ class GameImportPipeline
     pages = fetch_pages(games_to_update, count, error)
     details = extract_details(pages, count, error)
 
+    complete_processing(details, count, error)
+  end
+
+  def complete_processing(details, count, error)
     processing = true
     imported_games = 0
     while processing do
@@ -91,7 +95,12 @@ class GameImportPipeline
   end
 
   def report_error(error)
-    raise error
+    if logger
+      logger.error error.message
+      logger.error error.backtrace if error.backtrace
+    else
+      raise error
+    end
   end
 
   def report_timeout(stage)

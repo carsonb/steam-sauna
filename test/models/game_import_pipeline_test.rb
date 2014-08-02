@@ -68,11 +68,37 @@ class GameImportPipelineTest < ActiveSupport::TestCase
     end
   end
 
-  test "import_game sends all errors off to the error channel for proper handling" do
+  test "when an error is raised on a logged pipeline the error is simply sent to the logger" do
+    logger = LoggerDouble.new
+    pipeline.logger = logger
+
+    go! {
+      error << StandardError.new("Something dun goofed")
+    }
+
+    pipeline.complete_processing(channel!(Hash), 5, error)
+    assert_equal ["Something dun goofed"], logger.logs_for(:error)
+  end
+
+  test "when an error is raised on an unlogged pipeline the error is simply raised" do
     go! { pipeline.import_game({garbage: 'data', to: 'raise errors'}, error)}
 
     assert_raises_child_of NoMethodError do
       async_process {}
+    end
+  end
+
+  test "when a timeout is triggered on a logged pipeline the information is simply sent to the logger" do
+    logger = LoggerDouble.new
+    pipeline.logger = logger
+
+    pipeline.complete_processing(channel!(Hash), 5, error)
+    assert_equal ["[GameImportPipeline] Received a timeout during the processing of stage: importing"], logger.logs_for(:warn)
+  end
+
+  test "when a timeout is triggered on an unlogged pipeline then a Timeout::Error is raised" do
+    assert_raises Timeout::Error do
+      pipeline.complete_processing(channel!(Hash), 5, error)
     end
   end
 
