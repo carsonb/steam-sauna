@@ -1,13 +1,8 @@
 class GameImportPipeline
-
-  TIMEOUT = 5.0
-
-  attr_accessor :timeout, :stale_game_data, :logger
+  include AsynchronousProcessing
+  attr_accessor :stale_game_data
 
   def import(app_ids=[])
-    error = channel!(StandardError)
-    done = channel!(Integer)
-
     return [] if app_ids.blank?
     games_to_update = retrive_missing_or_outdated_games(app_ids)
     count = games_to_update.length
@@ -16,24 +11,6 @@ class GameImportPipeline
     details = extract_details(pages, count, error)
 
     complete_processing(details, count, error)
-  end
-
-  def complete_processing(details, count, error)
-    processing = true
-    imported_games = 0
-    while processing do
-      select! do |s|
-        s.case(details, :receive) do |detail|
-          import_game(detail, error)
-          imported_games += 1
-          processing = false if imported_games == count
-        end
-        s.case(error, :receive) { |err| report_error(err) }
-        s.timeout(timeout) { report_timeout('importing'); processing = false}
-      end
-    end
-
-    imported_games == count
   end
 
   def retrive_missing_or_outdated_games(app_ids)
@@ -67,22 +44,29 @@ class GameImportPipeline
 
   def extract_details(page_chan, count, error)
     details_chan = channel!(Hash, count)
-    go! do
-      loop do
-        select! do |s|
-          s.case(page_chan, :receive) do |content|
-            begin
-              details = CatalogPageDetails.new(content)
-              details_chan << details.as_hash
-            rescue => e
-              error << e
-            end
-          end
-          s.timeout(timeout) { report_timeout('extract_details') }
-        end
+    counter = 0
+    process('extract_details') do |s, done|
+      s.case(page_chan, :receive) do |content|
+        details = CatalogPageDetails.new(content)
+        details_chan << details.as_hash
+        counter += 1
+        go! {done << 1} if counter == count
       end
     end
     details_chan
+  end
+
+  def complete_processing(details, count, error)
+    imported_games = 0
+    process('importing') do |s, done|
+      s.case(details, :receive) do |detail|
+        import_game(detail, error)
+        imported_games += 1
+        go! { done << 1 } if imported_games == count
+      end
+    end
+
+    imported_games == count
   end
 
   def import_game(game_detail, error)
@@ -92,28 +76,6 @@ class GameImportPipeline
     game
   rescue => e
     error << e
-  end
-
-  def report_error(error)
-    if logger
-      logger.error error.message
-      logger.error error.backtrace if error.backtrace
-    else
-      raise error
-    end
-  end
-
-  def report_timeout(stage)
-    error_message = "[GameImportPipeline] Received a timeout during the processing of stage: #{stage}"
-    if logger
-      logger.warn error_message
-    else
-      raise Timeout::Error, error_message
-    end
-  end
-
-  def timeout
-    @timeout || TIMEOUT
   end
 
   def stale_game_data

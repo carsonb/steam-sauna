@@ -8,6 +8,7 @@ class GameImportPipelineTest < ActiveSupport::TestCase
     @necro = fetch_page(name: 'necrodancer.html')
     @pipeline = GameImportPipeline.new
     pipeline.timeout = 0.1
+    pipeline.error = @error
   end
 
   test "retrieving missing or outdated games includes games in the DB and those that do not exist" do

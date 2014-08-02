@@ -7,15 +7,25 @@ module AsynchronousProcessing
     attr_accessor :timeout, :logger, :error
   end
 
-  def process(stage, channel)
+  def process(stage, &blk)
     done = channel!(Integer)
     processing = true
     while processing do
       select! do |s|
         s.case(done, :receive) { processing = false}
-        blk.yield(s, done)
-        s.case(error, :receive) { |err| error << err }
-        s.timeout(timeout) { report_timeout(stage); done << 1 }
+        begin
+          blk.yield(s, done)
+        rescue => e
+          go! { error << e }
+        end
+        s.case(error, :receive) do |err|
+          report_error(err)
+          go! { done << 1 }
+        end
+        s.timeout(timeout) do
+          report_timeout(stage)
+          go! { done << 1 }
+        end
       end
     end
   end
@@ -38,6 +48,11 @@ module AsynchronousProcessing
   end
 
   def report_error(error)
-    raise error
+    if logger
+      logger.error error.message
+      logger.error error.backtrace if error.backtrace
+    else
+      raise error
+    end
   end
 end
