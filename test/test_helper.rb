@@ -1,8 +1,11 @@
 ENV["RAILS_ENV"] ||= "test"
 require File.expand_path('../../config/environment', __FILE__)
+require File.expand_path(File.dirname(__FILE__) + '/doubles/logger_double')
 require 'rails/test_help'
 require "minitest/autorun"
 require 'webmock/minitest'
+require 'pry'
+require 'pry-debugger'
 
 class ActiveSupport::TestCase
   ActiveRecord::Migration.check_pending!
