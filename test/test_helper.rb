@@ -29,3 +29,22 @@ class ActiveSupport::TestCase
     end
   end
 end
+
+module Remote
+  class Test < ActiveSupport::TestCase
+    APPS = {
+      227600 => 'Castle of Illusion',
+      237930 => 'Transistor',
+      620 => 'Portal 2',
+      730 => 'Counter-Strike: Global Offensive'
+    }
+
+    setup do
+      WebMock.allow_net_connect!
+    end
+
+    teardown do
+      WebMock.disable_net_connect!
+    end
+  end
+end

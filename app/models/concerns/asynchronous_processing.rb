@@ -4,7 +4,7 @@ module AsynchronousProcessing
   TIMEOUT = 5.0
 
   included do
-    attr_accessor :timeout, :logger, :error
+    attr_accessor :timeout, :logger
   end
 
   def process(stage, &blk)
@@ -36,6 +36,10 @@ module AsynchronousProcessing
 
   def error
     @error ||= channel!(StandardError)
+  end
+
+  def error=(channel)
+    @error = channel
   end
 
   def report_timeout(stage)
