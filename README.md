@@ -22,6 +22,11 @@ bundle install
 rake db:migrate
 ```
 
+Dependencies
+---------------
+
+* Memcached: `heroku addons:add memcachier`
+
 Ackowledgements
 ---------------
 

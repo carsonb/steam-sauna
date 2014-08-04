@@ -1,2 +1,5 @@
 STEAM_API_KEY: something_wonderful
 SECRET_TOKEN: something_magical
+MEMCACHIER_SERVERS: "localhost:11211"
+MEMCACHIER_USERNAME:
+MEMCACHIER_PASSWORD:

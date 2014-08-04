@@ -7,10 +7,12 @@ class GameImportPipeline
     games_to_update = retrive_missing_or_outdated_games(app_ids)
     count = games_to_update.length
 
-    pages = fetch_pages(games_to_update, count, error)
-    details = extract_details(pages, count, error)
+    logger.info "Starting to import #{count} games from Steam"
 
-    complete_processing(details, count, error)
+    pages = fetch_pages(games_to_update, count, error)
+    details, missed = extract_details(pages, count, error)
+
+    complete_processing(details, missed, count, error)
   end
 
   def retrive_missing_or_outdated_games(app_ids)
@@ -25,15 +27,18 @@ class GameImportPipeline
   end
 
   def fetch_pages(app_ids, count, error, before: ->{})
-    clazz = SteamCatalogPage
-    page_chan = channel!(String)
+    clazz1 = SteamCatalogPage
+    clazz2 = SteamAgeCheck
+    page_chan = channel!(Hash, count)
     app_ids.each do |id|
       go! do
         begin
           before.call
           page = SteamCatalogPage.new(id)
-          content = page.body
-          page_chan << content
+          age_check = SteamAgeCheck.new(page.body)
+          logger.info "[GameImportPipeline - fetch] Retrieving page data for app #{id}"
+          content = age_check.fill_and_submit
+          page_chan << {content: content, id: id} unless content.blank?
         rescue => e
           error << e
         end
@@ -44,26 +49,46 @@ class GameImportPipeline
 
   def extract_details(page_chan, count, error)
     details_chan = channel!(Hash, count)
+    missed_chan = channel!(Integer)
     counter = 0
-    process('extract_details') do |s, done|
-      s.case(page_chan, :receive) do |content|
-        details = CatalogPageDetails.new(content)
-        details_chan << details.as_hash
-        counter += 1
-        go! {done << 1} if counter == count
+    go! {
+      process('extract_details') do |s, done|
+        s.case(page_chan, :receive) do |data|
+          content = data[:content]
+          logger.info "[#{counter}/#{count}] Extracting details from page for app #{data[:id]}"
+          begin
+            details = CatalogPageDetails.new(content).as_hash
+            go! { details_chan << details if details }
+          rescue => e
+            Rails.logger.error("[GameImportPipeline] Could not extract details for app #{data[:id]}")
+            go! { missed_chan << 1}
+          end
+          counter += 1
+          go! {done << 1} if counter == count
+        end
       end
-    end
-    details_chan
+    }
+    [details_chan, missed_chan]
   end
 
-  def complete_processing(details, count, error)
+  def complete_processing(details, missed, count, error)
     imported_games = 0
-    process('importing') do |s, done|
-      s.case(details, :receive) do |detail|
-        import_game(detail, error)
-        imported_games += 1
-        go! { done << 1 } if imported_games == count
+    begin
+      process('importing') do |s, done|
+        s.case(details, :receive) do |detail|
+          game = import_game(detail, error)
+          imported_games += 1
+          logger.info "[#{imported_games}/#{count}] [#{game.app_id}] #{game.title} has been imported"
+          go! { done << 1 } if imported_games == count
+        end
+        s.case(missed, :receive) do |detail|
+          imported_games += 1
+          logger.info "[#{imported_games}/#{count}] A game could not be imported"
+          go! { done << 1 } if imported_games == count
+        end
       end
+    rescue Timeout::Error => e
+      logger.error "[GameImportPipeline] Timeout exception raised"
     end
 
     imported_games == count

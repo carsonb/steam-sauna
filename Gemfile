@@ -29,6 +29,8 @@ gem 'jbuilder', '~> 1.2'
 gem 'rest-client'
 gem 'nokogiri'
 gem 'agent'
+gem 'sucker_punch'
+gem 'dalli'
 
 group :doc do
   # bundle exec rake doc:rails generates the API under doc/api.
