@@ -1,13 +1,17 @@
 module WelcomeHelper
-  def game_icon(game)
-    image_tag("http://media.steampowered.com/steamcommunity/public/images/apps/#{game.appid}/#{game.img_icon_url}.jpg")
+  def game_icon(game)    
+    if game.img_icon_url.present?
+      image_tag("http://media.steampowered.com/steamcommunity/public/images/apps/#{game.appid}/#{game.img_icon_url}.jpg", alt: game.name)
+    else
+      image_tag("http://placehold.it/32x32.png/000000/ffffff&text=#{game.name.first}", alt: game.name)
+    end
   end
 
   def game_logo(game)
-    image_tag("http://media.steampowered.com/steamcommunity/public/images/apps/#{game.appid}/#{game.img_logo_url}.jpg")
-  end
-
-  def user_icon(user)
-    image_tag(user['avatar'])
+    if game.img_logo_url.present?
+      image_tag("http://media.steampowered.com/steamcommunity/public/images/apps/#{game.appid}/#{game.img_logo_url}.jpg", alt: game.name)
+    else
+      image_tag("http://placehold.it/184x69.png/000000/ffffff&text=#{URI.escape(game.name.truncate(12, omission: '…'))}", alt: game.name)
+    end
   end
 end
