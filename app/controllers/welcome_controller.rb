@@ -29,6 +29,6 @@ class WelcomeController < ApplicationController
   private
 
   def steam_service
-    @steam_service ||= SteamService.new(user_id) if user_id
+    @steam_service ||= SteamService.new(current_user.uid) if logged_in?
   end
 end
