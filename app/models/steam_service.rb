@@ -4,15 +4,6 @@ class SteamService
     @current_user_id = user_id
   end
 
-  def retrieve_friends
-    begin
-      friends = Steam::User.friends(@current_user_id)
-    rescue Steam::JSONError
-      return []
-    end
-    Steam::User.summaries(friends.map{|f| f['steamid']}).sort { |a,b| a['personaname'].downcase <=> b['personaname'].downcase }
-  end
-
   def retrieve_games(user_id)
     begin
       games = Steam::Player.owned_games(user_id, params: {include_appinfo: 1})
