@@ -9,7 +9,12 @@ class WelcomeController < ApplicationController
   end
 
   def search
-    @games_to_play = steam_service.find_matching_games(params[:friends])
+    selectedFriendIds = params[:friends]
+    @games_to_play = steam_service.find_matching_games(selectedFriendIds)
+
+    @friends_to_play_with = retrieve_friends.select do |friend|
+      selectedFriendIds.include? "#{friend[:uid]}"
+    end
   end
 
   def retrieve_friends

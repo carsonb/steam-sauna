@@ -1,3 +1,235 @@
 // Place all the styles related to the welcome controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+$color-bg: #6D6E72;
+$color-stripe: #DFC7AA;
+$color-stripe-alt: #CEAA7E;
+$color-border: #3A3A43;
+
+$color-hmm: #779EC5;
+$color-yay: #00A8AD;
+$color-nay: #C57878;
+$color-alt: #D17000;
+
+html, body {
+  margin: 0;
+
+  font-family: 'Luckiest Guy', sans-serif;
+
+  color: $color-border;
+  background-color: $color-bg;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+
+  &:visited {
+    color: inherit;
+  }
+}
+
+div.header {
+  z-index: 10;
+  position: fixed;
+  top: 0;
+
+  width: 100%;
+
+  font-size: 24px;
+
+  background-color: $color-stripe;
+  background-image: linear-gradient(90deg, transparent 50%, $color-stripe-alt 50%);
+  background-size: 65px 65px;
+
+  border-bottom: 2px solid $color-border;
+
+  div {
+    margin-left: 180px;
+  }
+
+  h1 {
+    margin-top: 10px;
+    margin-bottom: 15px;
+
+    font-size: 48px;
+    font-family: 'Black Ops One', sans-serif;
+  }
+
+  em {
+    font-size: 28px;
+    font-style: normal;
+
+    color: $color-hmm;
+  }
+}
+
+div#usr {
+  img {
+    float: left;
+  }
+
+  p {
+    margin: 0 76px;
+    padding-top: 4px;
+  }
+
+  p~p em {
+    color: $color-nay;
+
+    &~em {
+      color: $color-alt;
+
+      &~em {
+        color: $color-yay;
+      }
+    }
+  }
+
+  div.btn-wrapper {
+    max-width: 720px;
+
+    margin-right: 180px;
+    text-align: right;
+
+    a {
+      display: inline-block;
+
+      margin: 15px 0 25px;
+      padding: 16px 24px 8px 24px;
+
+      font-size: 28px;
+
+      color: #000;
+      background-color: $color-yay;
+
+      border-radius: 8px;
+      box-shadow: 2px 2px 2px 2px $color-border;
+
+      &:hover {
+        margin-top: 17px;
+        margin-left: 2px;
+        margin-bottom: 23px;
+
+        box-shadow: 2px 2px 0 0 $color-border;
+      }
+    }
+  }
+}
+
+div#peeps {
+  p {
+    margin: 18px 0;
+  }
+
+  img {
+    width: 64px;
+    height: 64px;
+  }
+
+  em~em {
+    color: $color-nay;
+
+    &~em {
+      color: $color-alt;
+    }
+  }
+}
+
+div.steam-data {
+
+  h2 {
+    text-align: center;
+    margin: 0;
+  }
+
+  ul {
+    display: inline-block;
+    min-width: 203px;
+
+    padding: 0;
+    margin-bottom: 20px;
+
+    text-align: center;
+
+    li {
+      display: inline-block;
+
+      margin: 10px;
+      padding: 5px;
+
+      list-style-type: none;
+    }
+  }
+}
+
+div#gamz {
+  margin-top: 220px;
+}
+
+div#frenz {
+  margin-top: 253px;
+
+  li {
+    /* :hover doesn't apply to <li> in IE7 and lower. */
+    &:hover {
+      background-color: $color-hmm;
+
+      a {
+        border-color: $color-hmm;
+      }
+    }
+
+    &.selected {
+      background-color: $color-yay;
+
+      a {
+        border-color: $color-yay;
+      }
+
+      &:hover {
+        background-color: $color-nay;
+
+        a {
+          border-color: $color-nay;
+        }
+      }
+    }
+
+    a {
+      display: block;
+
+      height: 184px;
+      width: 184px;
+
+      border: 2px solid $color-border;
+
+      img {
+        width: 100%;
+        height: 100%;
+      }
+
+      span {
+        display: block;
+
+        position: absolute;
+        margin-top: -29px;
+
+        height: 25px;
+        width: 176px;
+        padding: 0 4px;
+
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        font-size: 20px;
+        font-family: 'Black Ops One', sans-serif;
+
+        /* rgba doesn't work in IE8 and lower. */
+        background-color: rgba(200, 200, 200, 0.7)
+      }
+    }
+  }
+}
+
