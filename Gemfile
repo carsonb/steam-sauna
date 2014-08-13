@@ -28,7 +28,7 @@ gem 'jbuilder', '~> 1.2'
 
 gem 'rest-client'
 gem 'nokogiri'
-gem 'agent'
+gem 'agent', git: 'git@github.com:igrigorik/agent.git', ref: '3e113ad'
 gem 'sucker_punch'
 gem 'dalli'
 

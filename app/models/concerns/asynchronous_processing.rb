@@ -9,25 +9,30 @@ module AsynchronousProcessing
 
   def process(stage, &blk)
     done = channel!(Integer)
+    completed = channel!(Boolean)
     processing = true
-    while processing do
-      select! do |s|
-        s.case(done, :receive) { processing = false}
-        begin
-          blk.yield(s, done)
-        rescue => e
-          go! { error << e }
-        end
-        s.case(error, :receive) do |err|
-          report_error(err)
-          go! { done << 1 }
-        end
-        s.timeout(timeout) do
-          report_timeout(stage)
-          go! { done << 1 }
+    go! do
+      while processing do
+        select! do |s|
+          s.case(done, :receive) { processing = false; completed << true }
+          begin
+            blk.yield(s, done)
+          rescue => e
+            go! { error << e }
+          end
+          s.case(error, :receive) do |err|
+            report_error(err)
+            go! { processing = false; completed << false }
+          end
+          s.timeout(timeout) do
+            report_timeout(stage)
+            go! { processing = false; completed << false }
+          end
         end
       end
     end
+
+    completed
   end
 
   def timeout
@@ -57,6 +62,17 @@ module AsynchronousProcessing
       logger.error error.backtrace if error.backtrace
     else
       raise error
+    end
+  end
+
+  def bench(report_chan)
+    if report_chan
+      result = Benchmark.measure do
+        yield
+      end
+      go! { report_chan << result }
+    else
+      yield
     end
   end
 end

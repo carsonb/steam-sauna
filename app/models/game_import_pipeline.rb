@@ -1,6 +1,8 @@
+require 'benchmark'
+
 class GameImportPipeline
   include AsynchronousProcessing
-  attr_accessor :stale_game_data
+  attr_accessor :stale_game_data, :benchmark
 
   def import(app_ids=[])
     return [] if app_ids.blank?
@@ -12,7 +14,9 @@ class GameImportPipeline
     pages = fetch_pages(games_to_update, count, error)
     details, missed = extract_details(pages, count, error)
 
-    complete_processing(details, missed, count, error)
+    completed = complete_processing(details, missed, count, error)
+
+    completed.receive.first
   end
 
   def retrive_missing_or_outdated_games(app_ids)
@@ -30,20 +34,36 @@ class GameImportPipeline
     clazz1 = SteamCatalogPage
     clazz2 = SteamAgeCheck
     page_chan = channel!(Hash, count)
+    sync_chan = channel!(Integer, count)
+
     app_ids.each do |id|
       go! do
         begin
           before.call
-          page = SteamCatalogPage.new(id)
-          age_check = SteamAgeCheck.new(page.body)
-          logger.info "[GameImportPipeline - fetch] Retrieving page data for app #{id}"
-          content = age_check.fill_and_submit
-          page_chan << {content: content, id: id} unless content.blank?
+          bench(benchmark) do
+            page = SteamCatalogPage.new(id)
+            age_check = SteamAgeCheck.new(page.body)
+            logger.info "[GameImportPipeline - fetch] Retrieving page data for app #{id}"
+            content = age_check.fill_and_submit
+            page_chan << {content: content, id: id} unless content.blank?
+          end
         rescue => e
           error << e
+        ensure
+          go! { sync_chan << 1}
         end
       end
     end
+
+    go! do
+      progress = 0
+      while progress != count do
+        sync_chan.receive
+        progress += 1
+        page_chan.close if progress == count
+      end
+    end
+
     page_chan
   end
 
@@ -63,8 +83,12 @@ class GameImportPipeline
             Rails.logger.error("[GameImportPipeline] Could not extract details for app #{data[:id]}")
             go! { missed_chan << 1}
           end
-          counter += 1
-          go! {done << 1} if counter == count
+
+          if page_chan.closed?
+            go! { page_chan.close }
+            go! { missed_chan.close }
+            go! { done << 1 }
+          end
         end
       end
     }
@@ -73,25 +97,19 @@ class GameImportPipeline
 
   def complete_processing(details, missed, count, error)
     imported_games = 0
-    begin
-      process('importing') do |s, done|
-        s.case(details, :receive) do |detail|
-          game = import_game(detail, error)
-          imported_games += 1
-          logger.info "[#{imported_games}/#{count}] [#{game.app_id}] #{game.title} has been imported"
-          go! { done << 1 } if imported_games == count
-        end
-        s.case(missed, :receive) do |detail|
-          imported_games += 1
-          logger.info "[#{imported_games}/#{count}] A game could not be imported"
-          go! { done << 1 } if imported_games == count
-        end
+    process('importing') do |s, done|
+      s.case(details, :receive) do |detail|
+        game = import_game(detail, error)
+        imported_games += 1
+        logger.info "[#{imported_games}/#{count}] [#{game.app_id}] #{game.title} has been imported"
+        go! { done << 1 } if details.closed?
       end
-    rescue Timeout::Error => e
-      logger.error "[GameImportPipeline] Timeout exception raised"
+      s.case(missed, :receive) do |detail|
+        imported_games += 1
+        logger.info "[#{imported_games}/#{count}] A game could not be imported"
+        go! { done << 1 } if details.closed? && missed.closed?
+      end
     end
-
-    imported_games == count
   end
 
   def import_game(game_detail, error)
