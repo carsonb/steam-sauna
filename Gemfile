@@ -45,6 +45,7 @@ gem 'figaro'
 gem 'steam-api'
 
 gem 'thin'
+gem 'rails_12factor'
 
 group :development do
   gem 'pry'
