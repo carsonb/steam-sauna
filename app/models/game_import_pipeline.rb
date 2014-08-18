@@ -4,24 +4,13 @@ class GameImportPipeline
 
   def import(app_ids=[])
     return [] if app_ids.blank?
-    games_to_update = retrive_missing_or_outdated_games(app_ids)
+    games_to_update = GameFilter.new(app_ids).filter(:outdated_games, :missing_games)
     count = games_to_update.length
 
     pages = fetch_pages(games_to_update, count, error)
     details = extract_details(pages, count, error)
 
     complete_processing(details, count, error)
-  end
-
-  def retrive_missing_or_outdated_games(app_ids)
-    existing_games = SteamGame.where(app_id: app_ids).pluck(:app_id, :updated_at)
-    games_to_update = existing_games.map do |app_id, updated_at|
-      app_ids.delete(app_id)
-      if updated_at < stale_game_data
-        app_id
-      end
-    end
-    games_to_update.compact + app_ids
   end
 
   def fetch_pages(app_ids, count, error, before: ->{})
