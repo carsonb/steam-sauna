@@ -28,6 +28,10 @@ class ActiveSupport::TestCase
       assert_equal error, parent, "Expected an error of type #{error} but received of type #{parent} instead"
     end
   end
+
+  def assert_includes(array_of_hashes, key, value)
+    assert array_of_hashes.select{ |r| r[key] == value }
+  end
 end
 
 module Remote

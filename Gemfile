@@ -28,7 +28,7 @@ gem 'jbuilder', '~> 1.2'
 
 gem 'rest-client'
 gem 'nokogiri'
-gem 'agent'
+gem 'agent', git: 'git@github.com:igrigorik/agent.git', ref: '3e113ad2de87bf1d6c8fa99d10b4cd0ff5ca91ea'
 
 group :doc do
   # bundle exec rake doc:rails generates the API under doc/api.

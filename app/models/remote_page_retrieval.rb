@@ -1,4 +1,6 @@
 class RemotePageRetrieval
+  include ChannelSynchronization
+
   attr_reader :error_channel, :before_fetch, :retriever
   def initialize(error_channel, retriever: SteamCatalogPage, before_fetch: ->{})
     @error_channel = error_channel
@@ -23,25 +25,5 @@ class RemotePageRetrieval
       end
     end
     results
-  end
-
-  def synchronize(watched, count)
-    sync = channel!(Integer)
-    go! do
-      processing = true
-      while processing do
-        select! do |s|
-          s.case(sync, :receive) do
-            count -= 1
-            if count == 0
-              watched.close
-              sync.close
-              processing = false
-            end
-          end
-        end
-      end
-    end
-    sync
   end
 end

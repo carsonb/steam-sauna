@@ -1,3 +1,10 @@
+GIT
+  remote: git@github.com:igrigorik/agent.git
+  revision: 3e113ad2de87bf1d6c8fa99d10b4cd0ff5ca91ea
+  ref: 3e113ad2de87bf1d6c8fa99d10b4cd0ff5ca91ea
+  specs:
+    agent (0.9.1)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -26,7 +33,6 @@ GEM
       thread_safe (~> 0.1)
       tzinfo (~> 0.3.37)
     addressable (2.3.6)
-    agent (0.9.1)
     arel (4.0.2)
     better_errors (1.1.0)
       coderay (>= 1.0.0)
@@ -178,7 +184,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  agent
+  agent!
   better_errors
   binding_of_caller
   coffee-rails (~> 4.0.0)
