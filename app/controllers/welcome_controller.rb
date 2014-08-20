@@ -5,7 +5,6 @@ class WelcomeController < ApplicationController
 
   def index
     @friends = retrieve_friends
-    @games = retrieve_games
   end
 
   def search
@@ -20,10 +19,6 @@ class WelcomeController < ApplicationController
   def retrieve_friends
     current_user.update_friends unless current_user.friends?
     User.fetch_and_or_store(current_user.friends)
-  end
-
-  def retrieve_games
-    steam_service.retrieve_games(current_user.uid)
   end
 
   private

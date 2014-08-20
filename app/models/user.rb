@@ -6,7 +6,7 @@ class User < ActiveRecord::Base
     steam_accounts = steam_users(missing_accounts)
     steam_accounts.each(&:save)
 
-    where(uid: steam_ids)
+    where(uid: steam_ids).order('nickname ASC')
   end
 
   def self.missing_users(ids)
@@ -42,6 +42,10 @@ class User < ActiveRecord::Base
   end
 
   def steam_friends
-    Steam::User.friends(uid)
+    begin
+      Steam::User.friends(uid)
+    rescue Steam::JSONError
+      return []
+    end
   end
 end
